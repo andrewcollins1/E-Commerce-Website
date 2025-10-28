@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>{{ product.name }}</h1>
+
+        <!-- Product Image -->
+        {% if product.imageId %}
+            <img src="{{ url_for('static', filename=product.imageId) }}" alt="{{ product.name }}" class="img-fluid mb-3" style="max-width: 300px;">
+        {% else %}
+            <p>No image available for this product.</p>
+        {% endif %}
+
+        <div class="row">
+            <!-- Left Column: Product Info -->
+            <div class="col-md-8">
+                <p><strong>Environmental Impact:</strong> {{ product.environment }} Kg of CO₂</p>
+                <p><strong>Price:</strong> £{{ product.price }}</p>
+                <p>{{ product.full_description }}</p>
+            </div>
+
+            <!-- Right Column: Add to Basket -->
+            <div class="col-md-4">
+                <h4>Add to Basket</h4>
+                <form method="POST" action="{{ url_for('add_to_basket') }}">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <div class="form-group">
+                        <label for="quantity_{{ product.id }}">Quantity:</label>
+                        <input type="number" name="quantity" id="quantity_{{ product.id }}" class="form-control" value="1" min="1">
+                    </div>
+                    <button type="submit" class="btn btn-success">Add</button>
+                </form>
+
+                {% if error_message %}
+                    <p class="text-danger mt-2">{{ error_message }}</p>
+                {% endif %}
+
+                <hr>
+                <h5>Basket</h5>
+                <ul class="list-group">
+                    {% if basket and basket is mapping %}
+                        {% for product_id, quantity in basket.items() %}
+                            {% set item = Product.query.get(product_id|int) %}
+                            {% if item %}
+                                <li class="list-group-item">
+                                    {{ item.name }} - Quantity: {{ quantity }}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>Your basket is empty.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <a href="{{ url_for('galleryPage') }}" class="btn btn-secondary mt-4">Back to Gallery</a>
+    </div>
+</body>
+</html>

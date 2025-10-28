@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Gallery</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Product Gallery</h1>
+
+        <!-- Sort dropdown -->
+        <div class="d-flex justify-content-end mb-3">
+            <form method="get" class="form-inline">
+                <label for="sort" class="mr-2">Sort by:</label>
+                <select name="sort" id="sort" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name</option>
+                    <option value="price" {% if current_sort == 'price' %}selected{% endif %}>Price</option>
+                    <option value="environment" {% if current_sort == 'environment' %}selected{% endif %}>Environmental Impact</option>
+                </select>
+                <noscript><button type="submit" class="btn btn-primary">Sort</button></noscript>
+            </form>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        {% if product.imageId %}
+                            <a href="{{ url_for('singleProductPage', productId=product.id) }}">
+                                <img src="{{ url_for('static', filename=product.imageId) }}" class="card-img-top" alt="{{ product.name }}">
+                            </a>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">Carbon Footprint: {{ product.environment }} Kg CO₂</p>
+                            <p>{{ product.description }}</p>
+                            <p><strong>£{{ product.price }}</strong></p>
+
+                            <!-- Add to basket form -->
+                            <form method="POST" action="{{ url_for('add_to_basket') }}">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <div class="form-group d-flex align-items-center">
+                                    <label for="quantity_{{ product.id }}" class="mr-2 mb-0">Qty:</label>
+                                    <input type="number" name="quantity" id="quantity_{{ product.id }}" class="form-control mr-2" value="1" min="1" style="width: 80px;">
+                                    <button type="submit" class="btn btn-sm btn-success">Add</button>
+                                </div>
+                            </form>
+
+                            <a href="{{ url_for('singleProductPage', productId=product.id) }}" class="btn btn-primary mt-auto">View Product</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{{ url_for('view_basket') }}" class="btn btn-success mt-4">Go to Basket</a>
+        <a href="{{ url_for('checkout') }}" class="btn btn-warning mt-4 ml-2">Proceed to Checkout</a>
+    </div>
+</body>
+</html>
