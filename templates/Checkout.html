@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Checkout</h1>
+
+    {% if basket_items %}
+        <ul class="list-group mb-4">
+            {% for item in basket_items %}
+                <li class="list-group-item d-flex justify-content-between">
+                    {{ item.name }} x {{ item.quantity }}
+                    <span>£{{ item.subtotal }}</span>
+                </li>
+            {% endfor %}
+            <li class="list-group-item d-flex justify-content-between font-weight-bold">
+                Total:
+                <span>£{{ total }}</span>
+            </li>
+        </ul>
+
+        <form method="POST">
+            <h3>Payment Information</h3>
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" class="form-control" id="cardNumber" name="cardNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="expiry">Expiry Date</label>
+                <input type="text" class="form-control" id="expiry" name="expiry" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" class="form-control" id="cvv" name="cvv" required>
+            </div>
+            <button type="submit" class="btn btn-success">Confirm Payment</button>
+        </form>
+    {% else %}
+        <p>Your basket is empty.</p>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('galleryPage') }}" class="btn btn-secondary">Continue Shopping</a>
+</div>
+</body>
+</html>
